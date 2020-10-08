@@ -9,9 +9,9 @@ static	char	*ft_free(char **buf)
 		return (NULL);
 	if (*buf != NULL)
 	{
-		printf("fail4\n");
+	//	printf("fail4\n");
 		free(*buf);
-		printf("fail4\n");
+	//	printf("fail4\n");
 		*buf = NULL;
 	}
 	return (NULL);
@@ -40,11 +40,11 @@ static int	ft_process_line(char **dest, char *src)
 	if (index == 0)
 	{
 
-		printf("fail3\n");
-		printf("this is buf: |%s|\n", src);
-		printf("this is a quick test: ||");
+//		printf("fail3\n");
+//		printf("this is buf: |%s|\n", src);
+//		printf("this is a quick test: ||");
 		src = ft_free(&src);
-		printf("fail3\n");
+//		printf("fail3\n");
 //		printf("proces line ret -42\n");
 		return (-42);
 	}
@@ -73,7 +73,7 @@ static int	ft_process_line(char **dest, char *src)
 		i++;
 		index--;
 	}
-	printf("proces line ret (dest[0])\n");
+//	printf("proces line ret (dest[0])\n");
 	return ((int) ft_strlen(dest[0]));
 }
 
@@ -97,15 +97,15 @@ static char	*ft_cut_buf(char **buf)
 	}
 	if (i == 0)
 	{
-		printf("fail\n");
+//		printf("fail\n");
 		free(ptr);
-		printf("fail\n");
+//		printf("fail\n");
 		ptr = NULL;
 	}
-	printf("fail1\n");
+//	printf("fail1\n");
 	
 	ft_free(buf);
-	printf("fail1\n");
+//	printf("fail1\n");
 	return (ptr);
 }
 
@@ -117,19 +117,19 @@ int	get_next_line(int fd, char **line)
 	index = 0;
 	if (buf)
 	{
-		printf("LAST LOOP if\n");
+//		printf("LAST LOOP if\n");
 		index = ft_process_line(line, buf);
-		buf = ft_cut_buf(&buf); //returns -42 when end of file
+		if (ft_strlen(buf) != 0)
+			buf = ft_cut_buf(&buf); //returns -42 when end of file
 		if (index != -42 && *line)
 		{
 		//	printf("\n1DOBE1\n");
 			return ((int)ft_strlen(line[0]));
 		}
-		return (1);
 	}
 	else
 	{
-		printf("LAST LOOP\n");
+//		printf("LAST LOOP\n");
 		buf = ft_calloc(BUFF_SIZE + 1, sizeof(char));
 		if (buf == NULL)
 			return (-1);
@@ -143,8 +143,8 @@ int	get_next_line(int fd, char **line)
 		//	printf("\nDOBE\n");
 			return (ft_strlen(*line));
 		}
-		return (1);
 	}
+	return (0);
 }
 
 int	main(int argc, char **argv)
