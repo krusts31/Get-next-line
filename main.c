@@ -3,26 +3,37 @@
 int     main(int argc, char **argv)
 {
 	int             fd;
-	int             i;
+	int				fd2;
 	char            *line;
 	int             ret;
  
-	ret = 1;
 	line = NULL;
-	i = 1;
-	while (argc > 0)
+	if (argc <= 1)
 	{
-		fd = open(argv[i], O_RDONLY);
-			while (ret > 0)
-			{ 
-				ret = get_next_line(fd, &line);
-				printf("%s\n", line);
-				if (line != NULL)
-					free(line);
-			}
+		printf("PLEASE PASS AN ARGUMENT\n");
+		return (-1);
+	}
+	while (argc > 1)
+	{
+		fd = open(argv[1], O_RDONLY);
+		fd2 = open(argv[2], O_RDONLY);
+		ret = 1;
+		while (ret > 0)
+		{ 
+			ret = get_next_line(fd, &line);
+			printf("%s", line);
+			free(line);
+		}
+		ret = 1;
 		close(fd);
+		while (ret > 0)
+		{ 
+			ret = get_next_line(fd2, &line);
+			printf("%s", line);
+			free(line);
+		}
+		close(fd2);
 		argc--;
-		i++;
 	}
 	return (0);
 }

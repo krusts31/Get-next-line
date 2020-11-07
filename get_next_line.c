@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   get_next_line.c                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: alkrusts <alkrust@student.codam.nl>          +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2020/11/07 11:38:34 by alkrusts      #+#    #+#                 */
+/*   Updated: 2020/11/07 16:58:48 by alkrusts      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
-static t_list	*fr_create_list(int fd)
+static t_list	*ft_new_list(int fd)
 {
 	t_list	*new;
 
@@ -9,67 +21,68 @@ static t_list	*fr_create_list(int fd)
 		return (NULL);
 	new->fd = fd;
 	new->ptr = 0;
-	ft_memset(list->buf, 0, BUFF_SIZE);
-	list->str = NULL;
-	list->hold = NULL;
-	list->next = NULL;
+	ft_memset(new->buf, 0, BUFF_SIZE + 1);
+	new->str = NULL;
+	new->hold = NULL;
+	new->next = NULL;
 	return (new);
 }
 
-static char	*read_file(t_list *list)
+static int	ft_free_list(t_list *list, int ret)
+{
+	t_list	*tmp;
+
+	while (list != NULL)
+	{
+		tmp = list->next;
+		free (list);
+		list = tmp;
+	}
+	return (ret);
+}
+
+static char	*ft_read_file(t_list *list)
 {
 	if (list->buf[list->ptr] == '\0')
 	{
-		list->ret = read(fd, list->buf, BUFF_SIZE);
+		list->ret = read(list->fd, list->buf, BUFF_SIZE);
 		list->ptr = 0;
 		if (list->ret < 0)
 			return (NULL);
 	}
-	while (buf[list->ptr] != '\0')
-	{
-		if (list->buf[list->ptr] == '\n')
-			return (ft_strjoin(list->str, (ft_strdup(list->buf, list->ptr)))); //we need to move ptr on increment farther!
-		//	ft_stdup	code to skip newline
-		if (list->buf[list->ptr] == '\0')
-		{
-			list->hold = list->str;
-			list->str = ft_strjoin(list->buf, list->str);
-			if (list->hold != NULL)
-				free (list->hold);
-			if (list->str == NULL)
-				return (NULL);
-			read_file(list);
-		}
-		list->ptr++;
-	}
-	return (NULL);
+	return (ft_strdup(list->buf));
 }
+
+static int	ft_get_line(t_list *list, char **line)
+{
+	*line = ft_read_file(list);
+	ft_memset(list->buf, 0, BUFF_SIZE + 1);
+	return (ft_strlen(*line));
+} 
 
 int	get_next_line(int fd, char **line)
 {
-	static t_list	*list;
-	t_list		*ptr;
-	char		*string;
+	static	t_list	*list;
+	t_list			*ptr;
+	int				ret;
 
-	if (fd <= 0)
+	if (fd < 0)
 		return (ft_free_list(list, -1));
 	if (!list)
-		ft_create_list(fd);
+		list = ft_new_list(fd);
 	if (list == NULL)
 		return (-1);
-	while (fd != list->fd)
+	ptr = list;
+	while (fd != ptr->fd)
 	{
-
+		if (ptr->next == NULL)
+			ptr->next = ft_new_list(fd);
+		ptr = ptr->next;
+		if (ptr == NULL)
+			return (ft_free_list(list, -1));
 	}
-	string = read_file(list);
-	if (string == NULL)
-		return (ft_free_list(list, -1));
-	if (list->buf[list->ptr] == '\n')
-	{
-		ft_memset(list->buf, 0, list->ptr);
-		free (list->str);
-		list->ptr++;
-	}
-
+	ret = ft_get_line(ptr, line);
+//	if (ret == 0)
+//		return (ft_free_list(list, 0));
 	return (ret);
 }
