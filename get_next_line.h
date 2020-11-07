@@ -1,23 +1,28 @@
-#ifndef	GET_NEXT_LINE_H
-
+#ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
-# define BUFF_SIZE 3000 
+
+# define BUFF_SIZE 9 
+# include <fcntl.h>
+# include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include <sys/types.h>
-# include <sys/stat.h>
-# include <fcntl.h>
 
-typedef	struct	s_list
+typedef struct		s_list
 {
-	int	*ERROR;
-}		t_list;
+	int				fd;
+	int				ptr;
+	int				ret;
+	char			buf[BUFF_SIZE + 1];
+	char			*str;
+	char			*hold;
+	struct s_list	*next;
+}			t_list;
 
-void		*ft_memset(void *s, int c, size_t n);
-size_t  	ft_strlen(const char *s);
-void		*ft_calloc(size_t nmemb, size_t size);
-void		*ft_memcpy(void *dest, const void *src, size_t n);
-char		*ft_strjoin(char const *s1, char const *s2);
-int		get_next_line(int fd, char **line);
+void	ft_strclr1(char *s, int flag);
+char	*ft_strjoin(char *s1, char *s2);
+void	*ft_memove(char *dst, char *src);
+char	*ft_strsub(char const *s, unsigned int start, size_t len);
+int	get_next_line(int fd, char **line);
+t_arr	*ft_newlist(const int fd);
 
 #endif
