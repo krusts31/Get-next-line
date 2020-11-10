@@ -63,8 +63,7 @@ static char	*ft_get_line(t_list *list)
 	char	*tmp;
 	char	*ret;
 
-	ret = ft_strdup(list->buf, list);
-	list->ptr++;
+	ret = ft_strdup(list->buf);
 	ft_memset(list->buf, 0, list->ptr);
 	if (list->hold != NULL)
 	{
@@ -75,6 +74,7 @@ static char	*ft_get_line(t_list *list)
 	}
 	else
 		tmp = ret;
+	list->ptr++;
 	return (tmp);
 }
 
@@ -84,12 +84,12 @@ static char	*ft_get_line(t_list *list)
 
 static int	ft_read_file(t_list *list, char **line)
 {
-	while (list->buf[list->ptr] != '\n' && list->ret != 0)
+	while (1)
 	{
 		if (list->buf[list->ptr] == '\0')
 		{
 			if (list->hold == NULL)
-				list->hold = ft_strdup(list->buf, list);
+				list->hold = ft_strdup(list->buf);
 			else
 			{
 				list->join = ft_strjoin(list->hold, list->buf);
@@ -101,6 +101,8 @@ static int	ft_read_file(t_list *list, char **line)
 			if (list->ret < 0)
 				return (-1);
 		}
+		if (list->buf[list->ptr] == '\n' || list->ret == 0)
+			break ;
 		list->ptr++;
 	}
 	*line = ft_get_line(list);

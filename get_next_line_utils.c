@@ -50,36 +50,13 @@ int		ft_lstclear(t_list *list, int ret)
 	return (ret);
 }
 
-char	*ft_strdup(const char *s, t_list *list)
+char	*ft_strdup(const char *s)
 {
 	char	*ptr;
 	size_t	x;
 	size_t	y;
-	int	hold;
 
 	y = 0;
-	x = 0;
-	if (*s == '\0' && list->buf[list->ptr] == '\n')
-	{
-		hold = list->ptr;
-		while (list->buf[hold] != '\0')
-		{
-			hold--;
-			x++;
-		}
-		hold = list->ptr;
-		ptr = malloc((x + 1) * sizeof(char));
-		if (ptr == NULL)
-			return (NULL);
-		ft_memset(ptr, 0, x + 1);
-		while (list->buf[hold] != '\0')
-		{
-			ptr[x] = list->buf[hold];
-			x--;
-			hold--;
-		}
-		return (ptr);
-	}	
 	x = ft_strlen(s);
 	ptr = malloc((x + 1) * sizeof(char));
 	if (ptr == NULL)

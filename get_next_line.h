@@ -13,7 +13,7 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# define BUFF_SIZE 1
+# define BUFF_SIZE 4 
 # include <fcntl.h>
 # include <stdio.h> //remove this library when ubmitting
 # include <stdlib.h>
@@ -36,7 +36,7 @@ void	*ft_memove(char *dst, char *src);
 char	*ft_strsub(char const *s, unsigned int start, size_t len);
 int		get_next_line(int fd, char **line);
 size_t  ft_strlen(const char *s);
-char    *ft_strdup(const char *s, t_list *list);
+char    *ft_strdup(const char *s);
 int     ft_lstclear(t_list *list, int ret);
 
 #endif

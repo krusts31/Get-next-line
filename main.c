@@ -15,11 +15,11 @@
 int     main(int argc, char **argv)
 {
 	int             fd;
-	int				fd2;
+//	int				fd2;
 	char            *line;
-	char            *line2;
+//	char            *line2;
 	int             ret;
-	int				ret1;
+//	int				ret1;
  
 	line = NULL;
 	if (argc <= 1)
@@ -28,34 +28,35 @@ int     main(int argc, char **argv)
 		return (-1);
 	}
 	fd = open(argv[1], O_RDONLY);
-	fd2 = open(argv[2], O_RDONLY);
+//	fd2 = open(argv[2], O_RDONLY);
 	if (fd > 0)
 	{
 		ret = 1;
-		ret1 = 1;
-		while (ret > 0 && ret1 > 0)
+//		ret1 = 1;
+		while (ret > 0)
 		{ 
 			if (ret > 0)
 			{
 				ret = get_next_line(fd, &line);
-				if (ret == -1)
-					ret1 = -1;
+			//	if (ret == -1)
+			//		ret1 = -1;
 				printf("%s\n", line);
 				free(line);
 				line = NULL;
 			}
-			if (ret1 > 0)
+			/*if (ret1 > 0)
 			{
 				ret1 = get_next_line(fd2, &line2);
 				if (ret1 == -1)
 					ret = -1;
-				printf("%s\n", line2);
+				printf("%s", line2);
 				free(line2);
 				line2 = NULL;
 			}
+*/
 		}
 		close(fd);
-		close(fd2);
+//		close(fd2);
 	}
 	/*
 	if (fd2 > 0)
