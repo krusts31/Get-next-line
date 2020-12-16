@@ -11,65 +11,46 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
+#include <unistd.h>
 
 int     main(int argc, char **argv)
 {
 	int             fd;
-//	int				fd2;
+	int				fd2;
 	char            *line;
-//	char            *line2;
+	char            *line2;
 	int             ret;
-//	int				ret1;
+	int				ret1;
  
+	(void)argc;
 	line = NULL;
-	if (argc <= 1)
-	{
-		printf("PLEASE PASS AN ARGUMENT\n");
-		return (-1);
-	}
+	line2 = NULL;
 	fd = open(argv[1], O_RDONLY);
-//	fd2 = open(argv[2], O_RDONLY);
-	if (fd > 0)
-	{
-		ret = 1;
-//		ret1 = 1;
-		while (ret > 0)
-		{ 
-			if (ret > 0)
-			{
-				ret = get_next_line(fd, &line);
-			//	if (ret == -1)
-			//		ret1 = -1;
-				printf("%s\n", line);
-				free(line);
-				line = NULL;
-			}
-			/*if (ret1 > 0)
-			{
-				ret1 = get_next_line(fd2, &line2);
-				if (ret1 == -1)
-					ret = -1;
-				printf("%s", line2);
-				free(line2);
-				line2 = NULL;
-			}
-*/
-		}
-		close(fd);
-//		close(fd2);
-	}
-	/*
-	if (fd2 > 0)
-	{
-		ret = 1;
-		while (ret > 0)
-		{ 
-			printf("%s", line);
+	fd2 = open(argv[2], O_RDONLY);
+	ret = 1;
+	ret1 = 0;
+	while (ret > 0 || ret1 > 0)
+	{ 
+		if (ret > 0)
+		{
+			ret = get_next_line(fd, &line);
+			if (ret == 0 || ret == -1)
+				return (0);
+			write(1, line, ft_strlen(line));
+			write(1, "\n", 1);
 			free(line);
+			line = NULL;
 		}
-		line = NULL;
-		close(fd2);
+		if (ret1 > 0)
+		{
+			ret1 = get_next_line(fd2, &line2);
+			if (ret1 == -1)
+				ret = -1;
+			printf("%s\n", line2);
+			free(line2);
+			line2 = NULL;
+		}
 	}
-	*/
 	return (0);
 }

@@ -6,11 +6,12 @@
 /*   By: alkrusts <alkrust@student.codam.nl>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/07 11:38:34 by alkrusts      #+#    #+#                 */
-/*   Updated: 2020/11/09 22:18:22 by alkrusts      ########   odam.nl         */
+/*   Updated: 2020/12/14 16:36:14 by alkrusts      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <unistd.h>
 
 static t_list	*ft_new_list(int fd)
 {
@@ -21,92 +22,91 @@ static t_list	*ft_new_list(int fd)
 		return (NULL);
 	new->fd = fd;
 	new->ptr = 0;
-	new->ret = 1;
-	ft_memset(new->buf, 0, BUFF_SIZE + 1);
-	new->join = NULL;
-	new->hold = NULL;
 	new->next = NULL;
+	new->position = 0;
+	new->ret = 1;
+	new->rest = NULL;
+	new->pos = 0;
+	new->tmp = NULL;
 	return (new);
 }
 
-static int	ft_free_list(t_list *list, int ret)
+static int	ft_free_list(t_list *list, int r)
 {
 	t_list	*tmp;
 	t_list	*next_tmp;
 
-	if (list->ret <= 0)
-	{
-		tmp = list->next;
-		free (list);
-		list = tmp;
-		return (ret);
-	}
-	if (list->next == NULL)
-	{
-		free (list);
-		return (ret);
-	}
-	while (list->ret > 0)
+	while (list->next != NULL)
 	{
 		tmp = list;
 		list = list->next;
+		if (list == NULL)
+		{
+			free(tmp);
+			tmp = NULL;
+			return (list->ret);
+		}
+		if (list->ret <= 0)
+		{
+			next_tmp = list->next;
+			free(list);
+			tmp->next = next_tmp;
+			return (r);
+		}
 	}
-	next_tmp = list->next;
-	free (list);
-	list = tmp;
-	list->next = next_tmp;
-	return (ret);
+	return (r);
 }
 
-static char	*ft_get_line(t_list *list)
+static int	ft_read_c(t_list *i, char **l, char *b)
 {
-	char	*tmp;
-	char	*ret;
-
-	ret = ft_strdup(list->buf);
-	ft_memset(list->buf, 0, list->ptr);
-	if (list->hold != NULL)
+	if (b[i->position] == '\n')
 	{
-		tmp = ft_strjoin(list->hold, ret);
-		free (list->hold);
-		list->hold = NULL;
-		free (ret);
+		if (i->rest == NULL)
+			*l = ft_substr(b, i->ptr, ft_strlen(b), i);
+		else
+		{
+			*l = ft_strjoin(i->rest, ft_substr(b, 0, ft_strlen(b), i));
+			free (i->rest);
+			i->rest = NULL;
+		}
+		i->position++;
+		return (1);
 	}
-	else
-		tmp = ret;
-	list->ptr++;
-	return (tmp);
+	if (b[i->position] == '\0')
+	{
+		ft_con(i, b);
+		i->ptr = 0;
+		i->position = 0;
+		i->pos = 1;
+	}
+	return (0);
 }
-
-/*
-**	
-*/
 
 static int	ft_read_file(t_list *list, char **line)
 {
-	while (1)
+	char	buf[BUFFER_SIZE + 1];
+
+	while (list->ret > 0)
 	{
-		if (list->buf[list->ptr] == '\0')
+		if (list->position == 0 || list->pos == 1)
 		{
-			if (list->hold == NULL)
-				list->hold = ft_strdup(list->buf);
-			else
-			{
-				list->join = ft_strjoin(list->hold, list->buf);
-				free (list->hold);
-				list->hold = list->join;
-			}
-			list->ret = read(list->fd, list->buf, BUFF_SIZE);
+			list->ret = read(list->fd, buf, BUFFER_SIZE);
+			if (list->ret == 0 || list->ret == -1)
+				return (list->ret == 0 ? 0 : -1);
+			buf[list->ret] = '\0';
+			list->pos = 0;
 			list->ptr = 0;
-			if (list->ret < 0)
-				return (-1);
 		}
-		if (list->buf[list->ptr] == '\n' || list->ret == 0)
-			break ;
-		list->ptr++;
+		if (ft_read_c(list, line, buf))
+		{
+			if (*line == NULL)
+				return (-1);
+			return (1);
+		}
+		if (list->pos != 1)
+			list->position++;
 	}
-	*line = ft_get_line(list);
-	return ((list->ret) ? 1 : 0);
+	return (1);
 }
 
 int	get_next_line(int fd, char **line)
@@ -115,8 +115,8 @@ int	get_next_line(int fd, char **line)
 	t_list			*ptr;
 	int				ret;
 
-	if (line == NULL || BUFF_SIZE <= 0 || fd <= 0)
-		return (ft_lstclear(list, -1));
+	if (line == NULL ||  BUFFER_SIZE <= 0 || fd <= 0)
+		return (-1);
 	if (!list)
 		list = ft_new_list(fd);
 	if (list == NULL)
@@ -128,7 +128,7 @@ int	get_next_line(int fd, char **line)
 			ptr->next = ft_new_list(fd);
 		ptr = ptr->next;
 		if (ptr == NULL)
-			return (ft_lstclear(list, -1));
+			return (ft_free_list(list, -1));
 	}
 	ret = ft_read_file(ptr, line);
 	if (ret <= 0)

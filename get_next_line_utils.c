@@ -12,19 +12,6 @@
 
 #include "get_next_line.h"
 
-void	*ft_memset(void *s, int c, size_t n)
-{
-	size_t	i;
-
-	i = 0;
-	while (n > i)
-	{
-		((char *)s)[i] = (unsigned char)c;
-		i++;
-	}
-	return (s);
-}
-
 size_t	ft_strlen(const char *s)
 {
 	size_t	retu;
@@ -37,17 +24,16 @@ size_t	ft_strlen(const char *s)
 	return (retu);
 }
 
-int		ft_lstclear(t_list *list, int ret)
+void	ft_con(t_list *i, char *b)
 {
-	t_list	*tmp;
-
-	while (list != NULL)
+	if (i->rest == NULL)
+		i->rest = ft_substr(b, i->ptr, ft_strlen(b), NULL);
+	else
 	{
-		tmp = list->next;
-		free (list);
-		list = tmp;
+		i->tmp = ft_strjoin(i->rest, b);
+		free (i->rest);
+		i->rest = i->tmp;
 	}
-	return (ret);
 }
 
 char	*ft_strdup(const char *s)
@@ -58,14 +44,12 @@ char	*ft_strdup(const char *s)
 
 	y = 0;
 	x = ft_strlen(s);
-	ptr = malloc((x + 1) * sizeof(char));
+	ptr = malloc(x * sizeof(char) + 1);
 	if (ptr == NULL)
 		return (NULL);
-	ft_memset(ptr, 0, x + 1);
+	ptr[x] = '\0';
 	while (s[y])
 	{
-		if (s[y] == '\n')
-			break ;
 		ptr[y] = s[y];
 		y++;
 	}
@@ -78,11 +62,13 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	char	*ptr1;
 	char	*ret;
 
+	if (s1 == NULL || s2 == NULL)
+		return (NULL);
 	len = ft_strlen(s1) + ft_strlen(s2);
 	ptr1 = malloc((len + 1) * sizeof(char));
 	if (ptr1 == NULL)
 		return (NULL);
-	ft_memset(ptr1, 0, len + 1);
+	ptr1[len] = '\0';
 	ret = ptr1;
 	while (*s1)
 	{
@@ -98,27 +84,28 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	}
 	return (ptr1);
 }
-/*
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+
+char	*ft_substr(char const *s, unsigned int start, size_t len, t_list *list)
 {
 	char	*ptr;
 	size_t	size;
-	size_t	x;
 
 	size = 0;
 	if (s == NULL)
 		return (NULL);
-	x = ft_strlen((char *)s);
 	ptr = malloc((len + 1) * sizeof(char));
-	memset(ptr, 0, len + 1);
 	if (ptr == NULL)
 		return (NULL);
-	while (size != len)
+	while (size != len && s[start] != '\0')
 	{
-		ptr[size] = s[start]
+		if (list != NULL)
+			list->ptr++;
+		if (s[start] == '\n')
+			break ;
+		ptr[size] = s[start];
 		size++;
 		start++;
 	}
+	ptr[size] = '\0';
 	return (ptr);
 }
-*/
