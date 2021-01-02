@@ -12,19 +12,23 @@ size_t		len_to_char(char *line, char hit)
 	return (x);
 }
 
+static int	ft_free_list(t_list123 *info, int ret)
+{
+	free(info->rem);
+	free(info->tmp);
+	free(info);
+	return (ret);
+}
+
 static int	ft_new_line(char *buf, char **line, t_list123 *info)
 {
 	info->len = len_to_char(info->rem, '\0') + info->index;
-	info->prev = info->index;
+	info->prev = 1;
 	info->x = 0;
 	info->y = 0;
 	info->tmp = malloc((info->len * sizeof(char)) + 1);
 	if (info->tmp == NULL)
-	{
-		free(info->rem);
-		free(info);
-		return (-1);
-	}
+		return (ft_free_list(info, -1));
 	info->tmp[info->len] = '\0';
 	if (info->rem != NULL)
 	{
@@ -47,7 +51,7 @@ static int	ft_new_line(char *buf, char **line, t_list123 *info)
 		info->len = len_to_char(buf + (info->y + 1), '\0');
 		info->rem = malloc(sizeof(char) * info->len + 1);
 		if (info->rem == NULL)
-			return (0);
+			return (ft_free_list(info, -1));
 		info->rem[info->len] = '\0';
 		info->x = 0;
 		info->y++;
@@ -65,34 +69,30 @@ static int	ft_new_line(char *buf, char **line, t_list123 *info)
 
 static int	ft_null_byte(char *buf, t_list123 *info)
 {
-	char	*tmp;
-	size_t	size;
-	size_t	x;
-
-	x = len_to_char(buf, '\0');
-	size = info->index + len_to_char(info->rem, '\0');
-	tmp = malloc(sizeof(char) * size + 1);
-	if (tmp == NULL)
-		return (0);
-	tmp[size] = '\0';
-	while (size != 0 && x != 0)
+	info->x = len_to_char(buf, '\0');
+	info->y = info->index + len_to_char(info->rem, '\0');
+	info->tmp = malloc(sizeof(char) * info->y + 1);
+	if (info->tmp == NULL)
+		return (ft_free_list(info, -1));
+	info->tmp[info->y] = '\0';
+	while (info->y != 0 && info->x != 0)
 	{
-		size--;
-		x--;
-		tmp[size] = buf[x];
+		info->y--;
+		info->x--;
+		info->tmp[info->y] = buf[info->x];
 	}
 	if (info->rem != NULL)
 	{
-		x = len_to_char(info->rem, '\0');
-		while (size != 0 && x != 0)
+		info->x = len_to_char(info->rem, '\0');
+		while (info->y != 0 && info->x != 0)
 		{
-			size--;
-			x--;
-			tmp[size] = info->rem[x];
+			info->y--;
+			info->x--;
+			info->tmp[info->y] = info->rem[info->x];
 		}
 		free(info->rem);
 	}
-	info->rem = tmp;
+	info->rem = info->tmp;
 	info->prev = 0;
 	return (1);
 }
@@ -101,11 +101,12 @@ int	inti_list(t_list123 **info)
 {
 	*info = malloc(sizeof(t_list123) * 1);
 	if (*info == NULL)
-		return (0);
+		return (-1);
 	(*info)->index = 0;
 	(*info)->rem = NULL;
 	(*info)->prev = 0;
 	(*info)->next = NULL;
+	(*info)->tmp = NULL;
 	(*info)->ret = 1;
 	return (1);
 }
@@ -114,13 +115,14 @@ int	get_next_line(int fd, char **line)
 {
 	char		buf[BUFFER_SIZE + 1];
 	static t_list123	*info = NULL;
-	size_t			x;
 
-	x = 0;
 	if (line == NULL || BUFFER_SIZE <= 0 || fd < 0)
 		return (-1);
 	if (!info)
 		inti_list(&info);
+	if (info == NULL)
+		return (-1);
+	info->x = 0;
 	while (info->ret)
 	{
 		if (info->prev == 0)
@@ -131,12 +133,12 @@ int	get_next_line(int fd, char **line)
 		}
 		else
 		{
-			while (info->rem[x] != '\0')
+			while (info->rem[info->x] != '\0')
 			{
-				buf[x] = info->rem[x];
-				x++;
+				buf[info->x] = info->rem[info->x];
+				info->x++;
 			}
-			buf[x] = '\0';
+			buf[info->x] = '\0';
 			free (info->rem);
 			info->rem = NULL;
 			info->index = 0;

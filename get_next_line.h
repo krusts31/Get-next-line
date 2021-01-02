@@ -25,6 +25,7 @@ typedef struct		s_list
 	struct s_list	*next;
 	char		*rem;
 	char		*tmp;
+	char		buf[BUFFER_SIZE + 1];
 	size_t		index;
 	size_t		prev;
 	size_t		x;
