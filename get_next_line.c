@@ -1,137 +1,159 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   get_next_line.c                                    :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: alkrusts <alkrust@student.codam.nl>          +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2020/11/07 11:38:34 by alkrusts      #+#    #+#                 */
-/*   Updated: 2020/12/14 16:36:14 by alkrusts      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "get_next_line.h"
-#include <unistd.h>
 
-static t_list	*ft_new_list(int fd)
+size_t		len_to_char(char *line, char hit)
 {
-	t_list	*new;
+	size_t	x;
 
-	new = malloc(sizeof(t_list));
-	if (new == NULL)
-		return (NULL);
-	new->fd = fd;
-	new->ptr = 0;
-	new->next = NULL;
-	new->position = 0;
-	new->ret = 1;
-	new->rest = NULL;
-	new->pos = 0;
-	new->tmp = NULL;
-	return (new);
+	x = 0;
+	if (line == NULL)
+		return (0);
+	while (line[x] != hit && line[x] != '\0')
+		x++;
+	return (x);
 }
 
-static int	ft_free_list(t_list *list, int r)
+static int	ft_new_line(char *buf, char **line, t_list123 *info)
 {
-	t_list	*tmp;
-	t_list	*next_tmp;
-
-	while (list->next != NULL)
+	info->len = len_to_char(info->rem, '\0') + info->index;
+	info->prev = info->index;
+	info->x = 0;
+	info->y = 0;
+	info->tmp = malloc((info->len * sizeof(char)) + 1);
+	if (info->tmp == NULL)
 	{
-		tmp = list;
-		list = list->next;
-		if (list == NULL)
-		{
-			free(tmp);
-			tmp = NULL;
-			return (list->ret);
-		}
-		if (list->ret <= 0)
-		{
-			next_tmp = list->next;
-			free(list);
-			tmp->next = next_tmp;
-			return (r);
-		}
+		free(info->rem);
+		free(info);
+		return (-1);
 	}
-	return (r);
+	info->tmp[info->len] = '\0';
+	if (info->rem != NULL)
+	{
+		while (info->rem[info->x] != '\0')
+		{
+			info->tmp[info->x] = info->rem[info->x];
+			info->x++;
+		}
+		free (info->rem);
+		info->rem = NULL;
+	}
+	while (buf[info->y] != '\n' && buf[info->y] != '\0')
+	{
+		info->tmp[info->x] = buf[info->y];
+		info->x++;
+		info->y++;
+	}
+	if (buf[info->y] == '\n')
+	{
+		info->len = len_to_char(buf + (info->y + 1), '\0');
+		info->rem = malloc(sizeof(char) * info->len + 1);
+		if (info->rem == NULL)
+			return (0);
+		info->rem[info->len] = '\0';
+		info->x = 0;
+		info->y++;
+		while (buf[info->y] != '\0')
+		{
+			info->rem[info->x] = buf[info->y];
+			info->y++;
+			info->x++;
+		}
+		info->rem[info->x] = '\0';
+	}
+	*line = info->tmp;
+	return (1);
 }
 
-static int	ft_read_c(t_list *i, char **l, char *b)
+static int	ft_null_byte(char *buf, t_list123 *info)
 {
-	if (b[i->position] == '\n')
+	char	*tmp;
+	size_t	size;
+	size_t	x;
+
+	x = len_to_char(buf, '\0');
+	size = info->index + len_to_char(info->rem, '\0');
+	tmp = malloc(sizeof(char) * size + 1);
+	if (tmp == NULL)
+		return (0);
+	tmp[size] = '\0';
+	while (size != 0 && x != 0)
 	{
-		if (i->rest == NULL)
-			*l = ft_substr(b, i->ptr, ft_strlen(b), i);
-		else
+		size--;
+		x--;
+		tmp[size] = buf[x];
+	}
+	if (info->rem != NULL)
+	{
+		x = len_to_char(info->rem, '\0');
+		while (size != 0 && x != 0)
 		{
-			*l = ft_strjoin(i->rest, ft_substr(b, 0, ft_strlen(b), i));
-			free (i->rest);
-			i->rest = NULL;
+			size--;
+			x--;
+			tmp[size] = info->rem[x];
 		}
-		i->position++;
-		return (1);
+		free(info->rem);
 	}
-	if (b[i->position] == '\0')
-	{
-		ft_con(i, b);
-		i->ptr = 0;
-		i->position = 0;
-		i->pos = 1;
-	}
-	return (0);
+	info->rem = tmp;
+	info->prev = 0;
+	return (1);
 }
 
-static int	ft_read_file(t_list *list, char **line)
+int	inti_list(t_list123 **info)
 {
-	char	buf[BUFFER_SIZE + 1];
-
-	while (list->ret > 0)
-	{
-		if (list->position == 0 || list->pos == 1)
-		{
-			list->ret = read(list->fd, buf, BUFFER_SIZE);
-			if (list->ret == 0 || list->ret == -1)
-				return (list->ret == 0 ? 0 : -1);
-			buf[list->ret] = '\0';
-			list->pos = 0;
-			list->ptr = 0;
-		}
-		if (ft_read_c(list, line, buf))
-		{
-			if (*line == NULL)
-				return (-1);
-			return (1);
-		}
-		if (list->pos != 1)
-			list->position++;
-	}
+	*info = malloc(sizeof(t_list123) * 1);
+	if (*info == NULL)
+		return (0);
+	(*info)->index = 0;
+	(*info)->rem = NULL;
+	(*info)->prev = 0;
+	(*info)->next = NULL;
+	(*info)->ret = 1;
 	return (1);
 }
 
 int	get_next_line(int fd, char **line)
 {
-	static	t_list	*list = NULL;
-	t_list			*ptr;
-	int				ret;
+	char		buf[BUFFER_SIZE + 1];
+	static t_list123	*info = NULL;
+	size_t			x;
 
-	if (line == NULL ||  BUFFER_SIZE <= 0 || fd <= 0)
+	x = 0;
+	if (line == NULL || BUFFER_SIZE <= 0 || fd < 0)
 		return (-1);
-	if (!list)
-		list = ft_new_list(fd);
-	if (list == NULL)
-		return (-1);
-	ptr = list;
-	while (fd != ptr->fd)
+	if (!info)
+		inti_list(&info);
+	while (info->ret)
 	{
-		if (ptr->next == NULL)
-			ptr->next = ft_new_list(fd);
-		ptr = ptr->next;
-		if (ptr == NULL)
-			return (ft_free_list(list, -1));
+		if (info->prev == 0)
+		{
+			info->ret = read(fd, buf, BUFFER_SIZE);
+			buf[info->ret] = '\0';
+			info->index = 0;
+		}
+		else
+		{
+			while (info->rem[x] != '\0')
+			{
+				buf[x] = info->rem[x];
+				x++;
+			}
+			buf[x] = '\0';
+			free (info->rem);
+			info->rem = NULL;
+			info->index = 0;
+			info->prev = 1;
+		}
+		while (buf[info->index])
+		{
+			if (buf[info->index] == '\n')
+			{
+				ft_new_line(buf, line, info);
+				info->index++;
+				return (1);
+			}
+			info->index++;
+		}
+		if (buf[info->index] == '\0')
+			ft_null_byte(buf, info);
 	}
-	ret = ft_read_file(ptr, line);
-	if (ret <= 0)
-		return (ft_free_list(list, ret));
-	return (ret);
+	return (0);
 }

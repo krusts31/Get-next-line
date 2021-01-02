@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 int     main(int argc, char **argv)
 {
@@ -37,11 +37,12 @@ int     main(int argc, char **argv)
 			ret = get_next_line(fd, &line);
 			if (ret == 0 || ret == -1)
 				return (0);
-			write(1, line, ft_strlen(line));
+			write(1, line, strlen(line));
 			write(1, "\n", 1);
 			free(line);
 			line = NULL;
 		}
+		/*
 		if (ret1 > 0)
 		{
 			ret1 = get_next_line(fd2, &line2);
@@ -51,6 +52,7 @@ int     main(int argc, char **argv)
 			free(line2);
 			line2 = NULL;
 		}
+		*/
 	}
 	return (0);
 }
