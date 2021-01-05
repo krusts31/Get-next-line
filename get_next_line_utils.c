@@ -26,7 +26,9 @@ int	len_to_char(char *line, char hit, int ret, t_list123 *info)
 		return (x);
 	}
 	free(info->rem);
+	info->tmp = NULL;
 	free(info->tmp);
+	info->tmp = NULL;
 	free(info);
 	return (ret);
 }

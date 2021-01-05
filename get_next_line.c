@@ -119,5 +119,5 @@ int			get_next_line(int fd, char **line)
 		if (!ft_null_byte(info))
 			return (-1);
 	}
-	return (0);
+	return (len_to_char(NULL, 'x', 0, info));
 }
