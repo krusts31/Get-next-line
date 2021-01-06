@@ -32,13 +32,6 @@ int	len_to_char(char *line, char hit, int ret, t_list123 *info)
 			x++;
 		return (x);
 	}
-	if (info->ret == 0)
-	{
-		line = malloc(1 * sizeof(char));
-		if (line == NULL)
-			ret = -1;
-		line[0] = '\0';
-	}
 	free(info->rem);
 	info->tmp = NULL;
 	free(info->tmp);
