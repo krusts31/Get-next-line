@@ -35,12 +35,14 @@ int     main(int argc, char **argv)
 		if (ret > 0)
 		{
 			ret = get_next_line(fd, &line);
-			if (ret == 0 || ret == -1)
-				return (0);
+			if (ret == -1)
+				return (-1);
 			write(1, line, strlen(line));
 			write(1, "\n", 1);
 			free(line);
 			line = NULL;
+			if (ret == 0)
+				return (0);
 		}
 		/*
 		if (ret1 > 0)

@@ -79,7 +79,6 @@ static void	read_and_copy(t_list123 *info)
 			info->buf[0] = '\0';
 		}
 		info->buf[info->ret] = '\0';
-		info->index = 0;
 	}
 	else
 	{
@@ -91,9 +90,9 @@ static void	read_and_copy(t_list123 *info)
 		info->buf[info->x] = '\0';
 		free(info->rem);
 		info->rem = NULL;
-		info->index = 0;
 		info->prev = 1;
 	}
+	info->index = 0;
 }
 
 int			get_next_line(int fd, char **line)
@@ -109,6 +108,14 @@ int			get_next_line(int fd, char **line)
 	while (info->ret)
 	{
 		read_and_copy(info);
+		if (info->ret == 0)
+		{
+			*line = malloc(sizeof(char) * 1);
+			if (*line == NULL)
+				return (len_to_char(NULL, 'x', -1, info));
+			*line[0] = '\0';
+			return (len_to_char(NULL, 'x', 0, info));
+		}
 		while (info->buf[info->index])
 		{
 			if (info->buf[info->index] == '\n')

@@ -12,6 +12,13 @@
 
 #include "get_next_line.h"
 
+/*
+int	deleteNode(t_list123 **info)
+{
+	
+}
+*/
+
 int	len_to_char(char *line, char hit, int ret, t_list123 *info)
 {
 	int	x;
@@ -24,6 +31,13 @@ int	len_to_char(char *line, char hit, int ret, t_list123 *info)
 		while (line[x] != hit && line[x] != '\0')
 			x++;
 		return (x);
+	}
+	if (info->ret == 0)
+	{
+		line = malloc(1 * sizeof(char));
+		if (line == NULL)
+			ret = -1;
+		line[0] = '\0';
 	}
 	free(info->rem);
 	info->tmp = NULL;
