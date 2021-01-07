@@ -16,13 +16,13 @@ static int	ft_new_line(char **line, t_list123 *info)
 {
 	if (info->ret < 0)
 		return (-1);
-	info->len = len_to_char(info->rem, '\0', 0, info) + info->index;
+	info->len = len_to_char(info->rem, '\0', 0, &info) + info->index;
 	info->prev = 1;
 	info->x = 0;
 	info->y = 0;
 	info->tmp = malloc((info->len * sizeof(char)) + 1);
 	if (info->tmp == NULL)
-		return (len_to_char(NULL, 'x', -1, info));
+		return (len_to_char(NULL, 'x', -1, &info));
 	info->tmp[info->len] = '\0';
 	if (info->rem != NULL)
 	{
@@ -40,10 +40,10 @@ static int	ft_new_line(char **line, t_list123 *info)
 
 static int	ft_null_byte(t_list123 *info)
 {
-	info->y = info->index + len_to_char(info->rem, '\0', 0, info);
+	info->y = info->index + len_to_char(info->rem, '\0', 0, &info);
 	info->tmp = malloc(sizeof(char) * info->y + 1);
 	if (info->tmp == NULL)
-		return (len_to_char(NULL, 'x', -1, info));
+		return (len_to_char(NULL, 'x', -1, &info));
 	info->tmp[info->y] = '\0';
 	while (info->y != 0 && info->x != 0)
 	{
@@ -53,7 +53,7 @@ static int	ft_null_byte(t_list123 *info)
 	}
 	if (info->rem != NULL)
 	{
-		info->x = len_to_char(info->rem, '\0', 0, info);
+		info->x = len_to_char(info->rem, '\0', 0, &info);
 		while (info->y != 0 && info->x != 0)
 		{
 			info->y--;
@@ -75,7 +75,7 @@ static void	read_and_copy(t_list123 *info)
 		info->ret = read(info->fd, info->buf, BUFFER_SIZE);
 		if (info->ret < 0)
 		{
-			len_to_char(NULL, 'x', -1, info);
+			len_to_char(NULL, 'x', -1, &info);
 			info->buf[0] = '\0';
 		}
 		info->buf[info->ret] = '\0';
@@ -95,36 +95,52 @@ static void	read_and_copy(t_list123 *info)
 	info->index = 0;
 }
 
-int			get_next_line(int fd, char **line)
+int		get_next_line(int fd, char **line)
 {
 	static t_list123	*info = NULL;
+	t_list123		*tmp;
 
 	if (line == NULL || BUFFER_SIZE <= 0 || fd < 0)
 		return (-1);
-	if (!info)
-		inti_list(&info, fd);
 	if (info == NULL)
-		return (-1);
-	while (info->ret)
 	{
-		read_and_copy(info);
-		if (info->ret == 0)
+		info = init_list(fd);
+		if (info == NULL)
+			return (-1);
+	}
+	tmp = info;
+	while (tmp)
+	{
+		if (tmp->fd == fd)
+			break ;
+		tmp = tmp->next;
+	}
+	if (tmp == NULL)
+	{
+		tmp = ft_lstadd_back(&info, init_list(fd));
+		if (tmp == NULL)
+			return (deleteNode(&info));
+	}
+	while (tmp->ret)
+	{
+		read_and_copy(tmp);
+		if (tmp->ret == 0)
 		{
 			*line = malloc(sizeof(char) * 1);
 			if (*line == NULL)
-				return (len_to_char(NULL, 'x', -1, info));
+				return (len_to_char(NULL, 'x', -1, &info));
 			*line[0] = '\0';
-			return (len_to_char(NULL, 'x', 0, info));
+			return (deleteNode(&info));
 		}
-		while (info->buf[info->index])
+		while (tmp->buf[tmp->index])
 		{
-			if (info->buf[info->index] == '\n')
-				return (ft_new_line(line, info));
-			info->index++;
+			if (tmp->buf[tmp->index] == '\n')
+				return (ft_new_line(line, tmp));
+			tmp->index++;
 		}
-		info->x = len_to_char(info->buf, '\0', 0, info);
-		if (!ft_null_byte(info))
+		tmp->x = len_to_char(tmp->buf, '\0', 0, &tmp);
+		if (!ft_null_byte(tmp))
 			return (-1);
 	}
-	return (len_to_char(NULL, 'x', 0, info));
+	return (0);
 }

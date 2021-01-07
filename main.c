@@ -29,32 +29,37 @@ int     main(int argc, char **argv)
 	fd = open(argv[1], O_RDONLY);
 	fd2 = open(argv[2], O_RDONLY);
 	ret = 1;
-	ret1 = 0;
+	ret1 = 1;
 	while (ret > 0 || ret1 > 0)
 	{ 
-		if (ret > 0)
+		if (ret > 0 && fd > 0)
 		{
 			ret = get_next_line(fd, &line);
 			if (ret == -1)
 				return (-1);
+			write(1, "file 1: ", 8);
 			write(1, line, strlen(line));
 			write(1, "\n", 1);
 			free(line);
 			line = NULL;
-			if (ret == 0)
+			if (fd2 < 0 && ret == 0)
 				return (0);
 		}
-		/*
-		if (ret1 > 0)
+		if (ret1 > 0 && fd2 > 0)
 		{
 			ret1 = get_next_line(fd2, &line2);
 			if (ret1 == -1)
 				ret = -1;
-			printf("%s\n", line2);
+			write(1, "file 2: ", 8);
+			write(1, line2, strlen(line2));
+			write(1, "\n", 1);
 			free(line2);
 			line2 = NULL;
+			if (fd < 0 && ret1 == 0)
+				return (0);
 		}
-		*/
 	}
+	close(fd);
+	close(fd2);
 	return (0);
 }

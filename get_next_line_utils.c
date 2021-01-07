@@ -12,14 +12,7 @@
 
 #include "get_next_line.h"
 
-/*
-int	deleteNode(t_list123 **info)
-{
-	
-}
-*/
-
-int	len_to_char(char *line, char hit, int ret, t_list123 *info)
+int		len_to_char(char *line, char hit, int ret, t_list123 **info)
 {
 	int	x;
 
@@ -32,15 +25,17 @@ int	len_to_char(char *line, char hit, int ret, t_list123 *info)
 			x++;
 		return (x);
 	}
-	free(info->rem);
-	info->tmp = NULL;
-	free(info->tmp);
-	info->tmp = NULL;
-	free(info);
+	while (*info)
+	{
+		free((*info)->rem);
+		(*info)->rem = NULL;
+		(*info) = (*info)->next;
+	}
+	free(*info);
 	return (ret);
 }
 
-int	ft_con(t_list123 *info, char **line)
+int		ft_con(t_list123 *info, char **line)
 {
 	while (info->buf[info->y] != '\n' && info->buf[info->y] != '\0')
 	{
@@ -50,10 +45,10 @@ int	ft_con(t_list123 *info, char **line)
 	}
 	if (info->buf[info->y] == '\n')
 	{
-		info->len = len_to_char(info->buf + info->y + 1, '\0', 0, info);
+		info->len = len_to_char(info->buf + info->y + 1, '\0', 0, &info);
 		info->rem = malloc(sizeof(char) * info->len + 1);
 		if (info->rem == NULL)
-			return (len_to_char(NULL, 'x', -1, info));
+			return (len_to_char(NULL, 'x', -1, &info));
 		info->rem[info->len] = '\0';
 		info->x = 0;
 		info->y++;
@@ -69,17 +64,61 @@ int	ft_con(t_list123 *info, char **line)
 	return (1);
 }
 
-int	inti_list(t_list123 **info, int fd)
+t_list123	*init_list(int fd)
 {
-	*info = malloc(sizeof(t_list123) * 1);
-	if (*info == NULL)
-		return (-1);
-	(*info)->index = 0;
-	(*info)->rem = NULL;
-	(*info)->prev = 0;
-	(*info)->next = NULL;
-	(*info)->tmp = NULL;
-	(*info)->ret = 1;
-	(*info)->fd = fd;
-	return (1);
+	t_list123	*info;
+
+	info = malloc(sizeof(t_list123) * 1);
+	if (info == NULL)
+		return (NULL);
+	info->next = NULL;
+	info->rem = NULL;
+	info->tmp = NULL;
+	info->index = 0;
+	info->prev = 0;
+	info->ret = 1;
+	info->fd = fd;
+	return (info);
+}
+
+
+t_list123	*ft_lstadd_back(t_list123 **lst, t_list123 *new)
+{
+	if (new == NULL)
+		return (NULL);
+	if (*lst == NULL)
+		*lst = new;
+	else
+	{
+		while ((*lst)->next != NULL)
+			(*lst) = (*lst)->next;
+		(*lst)->next = new;
+	}
+	return ((*lst)->next);
+}
+
+int		deleteNode(t_list123 **info)
+{
+	t_list123 *tmp;
+	t_list123 *prev;
+
+	tmp = *info;
+	if (tmp != NULL && tmp->ret == 0)
+	{
+		*info = (*info)->next;
+		free(tmp->rem);
+		free(tmp);
+		return (0);
+	}
+	while (tmp != NULL && tmp->ret != 0)
+	{
+		prev = tmp;
+		tmp = tmp->next;
+	}
+	if (tmp == NULL)
+		return (0);
+	prev->next = tmp->next;
+	free(tmp->rem);
+	free(tmp);
+	return (0);
 }
