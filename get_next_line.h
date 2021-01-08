@@ -6,7 +6,7 @@
 /*   By: alkrusts <alkrust@student.codam.nl>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/07 11:41:34 by alkrusts      #+#    #+#                 */
-/*   Updated: 2021/01/05 21:55:56 by alkrusts      ########   odam.nl         */
+/*   Updated: 2021/01/08 03:57:54 by alkrusts      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ typedef struct	s_list
 	int				fd;
 }				t_list123;
 
-int				get_next_line(int fd, char **line);
-int				len_to_char(char *line, char hit, int ret, t_list123 **info);
-int				ft_con(t_list123 *info, char **line);
-int				deleteNode(t_list123 **info);
+int					get_next_line(int fd, char **line);
+int					len_to_c(char *line, char hit, int ret, t_list123 **info);
+int					ft_con(t_list123 *info, char **line);
 t_list123			*init_list(int fd);
-t_list123			*ft_lstadd_back(t_list123 **lst, t_list123 *new);
+t_list123			*ft_lst_b(t_list123 **lst, t_list123 *new, char **line);
+int					delete_node(t_list123 **info, char **line);
 #endif

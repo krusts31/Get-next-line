@@ -6,13 +6,13 @@
 /*   By: alkrusts <alkrust@student.codam.nl>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/01/05 15:57:11 by alkrusts      #+#    #+#                 */
-/*   Updated: 2021/01/05 21:51:07 by alkrusts      ########   odam.nl         */
+/*   Updated: 2021/01/08 03:57:18 by alkrusts      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int		len_to_char(char *line, char hit, int ret, t_list123 **info)
+int			len_to_c(char *line, char hit, int ret, t_list123 **info)
 {
 	int	x;
 
@@ -35,7 +35,7 @@ int		len_to_char(char *line, char hit, int ret, t_list123 **info)
 	return (ret);
 }
 
-int		ft_con(t_list123 *info, char **line)
+int			ft_con(t_list123 *info, char **line)
 {
 	while (info->buf[info->y] != '\n' && info->buf[info->y] != '\0')
 	{
@@ -45,10 +45,10 @@ int		ft_con(t_list123 *info, char **line)
 	}
 	if (info->buf[info->y] == '\n')
 	{
-		info->len = len_to_char(info->buf + info->y + 1, '\0', 0, &info);
+		info->len = len_to_c(info->buf + info->y + 1, '\0', 0, &info);
 		info->rem = malloc(sizeof(char) * info->len + 1);
 		if (info->rem == NULL)
-			return (len_to_char(NULL, 'x', -1, &info));
+			return (len_to_c(NULL, 'x', -1, &info));
 		info->rem[info->len] = '\0';
 		info->x = 0;
 		info->y++;
@@ -81,12 +81,18 @@ t_list123	*init_list(int fd)
 	return (info);
 }
 
-
-t_list123	*ft_lstadd_back(t_list123 **lst, t_list123 *new)
+t_list123	*ft_lst_b(t_list123 **lst, t_list123 *new, char **line)
 {
 	t_list123 *tmp;
 
 	tmp = *lst;
+	if (line)
+	{
+		*line = malloc(sizeof(char) * 1);
+		if (*line == NULL)
+			return (NULL);
+		return (*lst);
+	}
 	if (new == NULL)
 		return (NULL);
 	if (*lst == NULL)
@@ -100,14 +106,15 @@ t_list123	*ft_lstadd_back(t_list123 **lst, t_list123 *new)
 			tmp = tmp->next;
 		tmp->next = new;
 	}
-	return (tmp);
+	return (tmp->next);
 }
 
-int		deleteNode(t_list123 **info)
+int			delete_node(t_list123 **info, char **line)
 {
 	t_list123 *tmp;
 	t_list123 *prev;
 
+	*line[0] = '\0';
 	tmp = *info;
 	if (tmp != NULL && tmp->ret == 0)
 	{

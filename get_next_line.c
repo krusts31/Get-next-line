@@ -6,23 +6,23 @@
 /*   By: alkrusts <alkrust@student.codam.nl>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/01/05 15:56:36 by alkrusts      #+#    #+#                 */
-/*   Updated: 2021/01/05 21:50:42 by alkrusts      ########   odam.nl         */
+/*   Updated: 2021/01/08 03:57:09 by alkrusts      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static int		ft_new_line(char **line, t_list123 *info)
+static int	ft_new_line(char **line, t_list123 *info)
 {
 	if (info->ret < 0)
 		return (-1);
-	info->len = len_to_char(info->rem, '\0', 0, &info) + info->index;
+	info->len = len_to_c(info->rem, '\0', 0, &info) + info->index;
 	info->prev = 1;
 	info->x = 0;
 	info->y = 0;
 	info->tmp = malloc((info->len * sizeof(char)) + 1);
 	if (info->tmp == NULL)
-		return (len_to_char(NULL, 'x', -1, &info));
+		return (len_to_c(NULL, 'x', -1, &info));
 	info->tmp[info->len] = '\0';
 	if (info->rem != NULL)
 	{
@@ -38,12 +38,12 @@ static int		ft_new_line(char **line, t_list123 *info)
 	return (ft_con(info, line));
 }
 
-static int		ft_null_byte(t_list123 *info)
+static int	ft_null_byte(t_list123 *info)
 {
-	info->y = info->index + len_to_char(info->rem, '\0', 0, &info);
+	info->y = info->index + len_to_c(info->rem, '\0', 0, &info);
 	info->tmp = malloc(sizeof(char) * info->y + 1);
 	if (info->tmp == NULL)
-		return (len_to_char(NULL, 'x', -1, &info));
+		return (len_to_c(NULL, 'x', -1, &info));
 	info->tmp[info->y] = '\0';
 	while (info->y != 0 && info->x != 0)
 	{
@@ -53,7 +53,7 @@ static int		ft_null_byte(t_list123 *info)
 	}
 	if (info->rem != NULL)
 	{
-		info->x = len_to_char(info->rem, '\0', 0, &info);
+		info->x = len_to_c(info->rem, '\0', 0, &info);
 		while (info->y != 0 && info->x != 0)
 		{
 			info->y--;
@@ -67,7 +67,7 @@ static int		ft_null_byte(t_list123 *info)
 	return (1);
 }
 
-static void		read_and_copy(t_list123 *info)
+static void	read_and_copy(t_list123 *info)
 {
 	info->x = 0;
 	if (info->prev == 0)
@@ -75,7 +75,7 @@ static void		read_and_copy(t_list123 *info)
 		info->ret = read(info->fd, info->buf, BUFFER_SIZE);
 		if (info->ret < 0)
 		{
-			len_to_char(NULL, 'x', -1, &info);
+			len_to_c(NULL, 'x', -1, &info);
 			info->buf[0] = '\0';
 		}
 		info->buf[info->ret] = '\0';
@@ -114,30 +114,28 @@ static int	gnl_con(t_list123 **info, t_list123 **tmp, int fd, char **line)
 	}
 	if ((*tmp) == NULL)
 	{
-		(*tmp) = ft_lstadd_back(info, init_list(fd));
+		(*tmp) = ft_lst_b(info, init_list(fd), NULL);
 		if ((*tmp) == NULL)
 			return (0);
 	}
 	return (1);
 }
 
-int		get_next_line(int fd, char **line)
+int			get_next_line(int fd, char **line)
 {
 	static t_list123	*info = NULL;
-	t_list123		*tmp;
+	t_list123			*tmp;
 
 	if (!gnl_con(&info, &tmp, fd, line))
-		return (-1);
+		return (len_to_c(NULL, 'x', -1, &info));
 	while (tmp->ret)
 	{
 		read_and_copy(tmp);
 		if (tmp->ret == 0)
 		{
-			*line = malloc(sizeof(char) * 1);
-			if (*line == NULL)
-				return (len_to_char(NULL, 'x', -1, &info));
-			*line[0] = '\0';
-			return (deleteNode(&info));
+			if (!ft_lst_b(&info, NULL, line))
+				return (len_to_c(NULL, 'x', -1, &info));
+			return (delete_node(&info, line));
 		}
 		while (tmp->buf[tmp->index])
 		{
@@ -145,9 +143,9 @@ int		get_next_line(int fd, char **line)
 				return (ft_new_line(line, tmp));
 			tmp->index++;
 		}
-		tmp->x = len_to_char(tmp->buf, '\0', 0, &tmp);
+		tmp->x = len_to_c(tmp->buf, '\0', 0, &tmp);
 		if (!ft_null_byte(tmp))
-			return (-1);
+			return (len_to_c(NULL, 'x', -1, &info));
 	}
 	return (0);
 }
