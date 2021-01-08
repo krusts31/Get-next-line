@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-static int	ft_new_line(char **line, t_list123 *info)
+static int		ft_new_line(char **line, t_list123 *info)
 {
 	if (info->ret < 0)
 		return (-1);
@@ -38,7 +38,7 @@ static int	ft_new_line(char **line, t_list123 *info)
 	return (ft_con(info, line));
 }
 
-static int	ft_null_byte(t_list123 *info)
+static int		ft_null_byte(t_list123 *info)
 {
 	info->y = info->index + len_to_char(info->rem, '\0', 0, &info);
 	info->tmp = malloc(sizeof(char) * info->y + 1);
@@ -67,7 +67,7 @@ static int	ft_null_byte(t_list123 *info)
 	return (1);
 }
 
-static void	read_and_copy(t_list123 *info)
+static void		read_and_copy(t_list123 *info)
 {
 	info->x = 0;
 	if (info->prev == 0)
@@ -95,32 +95,39 @@ static void	read_and_copy(t_list123 *info)
 	info->index = 0;
 }
 
+static int	gnl_con(t_list123 **info, t_list123 **tmp, int fd, char **line)
+{
+	if (line == NULL || BUFFER_SIZE <= 0 || fd < 0)
+		return (0);
+	if ((*info) == NULL)
+	{
+		(*info) = init_list(fd);
+		if ((*info) == NULL)
+			return (0);
+	}
+	(*tmp) = (*info);
+	while ((*tmp))
+	{
+		if ((*tmp)->fd == fd)
+			break ;
+		(*tmp) = (*tmp)->next;
+	}
+	if ((*tmp) == NULL)
+	{
+		(*tmp) = ft_lstadd_back(info, init_list(fd));
+		if ((*tmp) == NULL)
+			return (0);
+	}
+	return (1);
+}
+
 int		get_next_line(int fd, char **line)
 {
 	static t_list123	*info = NULL;
 	t_list123		*tmp;
 
-	if (line == NULL || BUFFER_SIZE <= 0 || fd < 0)
+	if (!gnl_con(&info, &tmp, fd, line))
 		return (-1);
-	if (info == NULL)
-	{
-		info = init_list(fd);
-		if (info == NULL)
-			return (-1);
-	}
-	tmp = info;
-	while (tmp)
-	{
-		if (tmp->fd == fd)
-			break ;
-		tmp = tmp->next;
-	}
-	if (tmp == NULL)
-	{
-		tmp = ft_lstadd_back(&info, init_list(fd));
-		if (tmp == NULL)
-			return (deleteNode(&info));
-	}
 	while (tmp->ret)
 	{
 		read_and_copy(tmp);

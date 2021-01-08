@@ -84,17 +84,23 @@ t_list123	*init_list(int fd)
 
 t_list123	*ft_lstadd_back(t_list123 **lst, t_list123 *new)
 {
+	t_list123 *tmp;
+
+	tmp = *lst;
 	if (new == NULL)
 		return (NULL);
 	if (*lst == NULL)
+	{
 		*lst = new;
+		return (*lst);
+	}
 	else
 	{
-		while ((*lst)->next != NULL)
-			(*lst) = (*lst)->next;
-		(*lst)->next = new;
+		while (tmp->next != NULL)
+			tmp = tmp->next;
+		tmp->next = new;
 	}
-	return ((*lst)->next);
+	return (tmp);
 }
 
 int		deleteNode(t_list123 **info)
