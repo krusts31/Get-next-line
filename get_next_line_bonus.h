@@ -6,12 +6,12 @@
 /*   By: alkrusts <alkrust@student.codam.nl>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/07 11:41:34 by alkrusts      #+#    #+#                 */
-/*   Updated: 2021/01/09 17:30:52 by alkrusts      ########   odam.nl         */
+/*   Updated: 2021/01/09 17:30:37 by alkrusts      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 8
 # endif

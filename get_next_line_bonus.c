@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static int	ft_new_line(char **line, t_list123 *info)
 {
@@ -104,7 +104,7 @@ static int	gnl_con(t_list123 *info, t_list123 *tmp, char **line)
 			if (tmp->rem == NULL)
 				break ;
 			*line = tmp->rem;
-			return (delete_node(&info, NULL));
+			return (delete_node(&info, line));
 		}
 		while (tmp->buf[tmp->index])
 		{
