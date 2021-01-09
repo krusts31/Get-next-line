@@ -55,8 +55,7 @@ int     main(int argc, char **argv)
 	{ 
 		if (ret > 0 && fd > 0)
 		{
-			ret = get_next_line(123, &line);
-			write(1, "file 1: ", 8);
+			ret = get_next_line(fd, &line);
 			printf("[%d], file 1: %s\n", ret, line);
 			free(line);
 			line = NULL;

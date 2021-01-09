@@ -113,7 +113,7 @@ int			delete_node(t_list123 **info, char **line)
 	if (tmp != NULL && tmp->ret == 0)
 	{
 		*info = (*info)->next;
-		free(*info);
+	//	free(tmp);
 		return (0);
 	}
 	while (tmp != NULL && tmp->ret != 0)
