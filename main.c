@@ -13,6 +13,7 @@
 #include "get_next_line.h"
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 
 int     main(int argc, char **argv)
 {
@@ -54,37 +55,30 @@ int     main(int argc, char **argv)
 	{ 
 		if (ret > 0 && fd > 0)
 		{
-			ret = get_next_line(fd, &line);
+			ret = get_next_line(123, &line);
 			write(1, "file 1: ", 8);
-			write(1, line, strlen(line));
-			write(1, "\n", 1);
+			printf("[%d], file 1: %s\n", ret, line);
 			free(line);
 			line = NULL;
 		}
 		if (ret1 > 0 && fd2 > 0)
 		{
 			ret1 = get_next_line(fd2, &line2);
-			write(1, "file 2: ", 8);
-			write(1, line2, strlen(line2));
-			write(1, "\n", 1);
+			printf("[%d], file 2: %s\n", ret1, line2);
 			free(line2);
 			line2 = NULL;
 		}
 		if (ret2 > 0 && fd3 > 0)
 		{
 			ret2 = get_next_line(fd3, &line3);
-			write(1, "file 3: ", 8);
-			write(1, line3, strlen(line3));
-			write(1, "\n", 1);
+			printf("[%d], file 3: %s\n", ret2, line3);
 			free(line3);
 			line3 = NULL;
 		}
 		if (ret3 > 0 && fd4 > 0)
 		{
 			ret3 = get_next_line(fd4, &line4);
-			write(1, "file 4: ", 8);
-			write(1, line4, strlen(line4));
-			write(1, "\n", 1);
+			printf("[%d], file 4: %s\n", ret3, line4);
 			free(line4);
 			line4 = NULL;
 		}

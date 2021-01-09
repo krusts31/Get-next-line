@@ -28,6 +28,7 @@ int			len_to_c(char *line, char hit, int ret, t_list123 **info)
 	while (*info)
 	{
 		free((*info)->rem);
+		(*info)->rem = NULL;
 		(*info) = (*info)->next;
 	}
 	free(*info);
