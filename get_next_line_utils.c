@@ -15,6 +15,7 @@
 int			len_to_c(char *line, char hit, int ret, t_list123 **info)
 {
 	int		x;
+	t_list123	*now;
 
 	if (hit != 'x')
 	{
@@ -27,9 +28,10 @@ int			len_to_c(char *line, char hit, int ret, t_list123 **info)
 	}
 	while (*info)
 	{
+		now = (*info)->next;
 		free((*info)->rem);
-		(*info)->rem = NULL;
-		(*info) = (*info)->next;
+		free(*info);
+		(*info) = now;
 	}
 	free(*info);
 	return (ret);

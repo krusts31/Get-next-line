@@ -51,14 +51,21 @@ int     main(int argc, char **argv)
 		ret1 = 0;
 	if (fd < 0)
 		ret = 0;
+	int	x;
+
+	x = 3;
 	while (ret > 0 || ret1 > 0 || ret3 > 0 || ret2 > 0)
 	{ 
 		if (ret > 0 && fd > 0)
 		{
-			ret = get_next_line(fd, &line);
+			if (x == 0)
+				ret = get_next_line(fd, NULL);
+			else
+				ret = get_next_line(fd, &line);
 			printf("[%d], file 1: %s\n", ret, line);
 			free(line);
 			line = NULL;
+			x--;
 		}
 		if (ret1 > 0 && fd2 > 0)
 		{
