@@ -93,33 +93,33 @@ static int	read_and_copy(t_list123 *info)
 	return (1);
 }
 
-static int	gnl_con(t_list123 *info, t_list123 *tmp, char **line)
+static int	gnl_con(t_list123 **info, t_list123 **tmp, char **line)
 {
-	while (tmp->ret)
+	while ((*tmp)->ret)
 	{
-		if (!read_and_copy(tmp))
-			return (len_to_c(NULL, 'x', -1, &info));
-		if (tmp->ret == 0)
+		if (!read_and_copy(*tmp))
+			return (len_to_c(NULL, 'x', -1, info));
+		if ((*tmp)->ret == 0)
 		{
-			if (tmp->rem == NULL)
+			if ((*tmp)->rem == NULL)
 				break ;
-			*line = tmp->rem;
-			return (delete_node(&info, NULL));
+			*line = (*tmp)->rem;
+			return (delete_node(info, NULL));
 		}
-		while (tmp->buf[tmp->index])
+		while ((*tmp)->buf[(*tmp)->index])
 		{
-			if (tmp->buf[tmp->index] == '\n')
-				return (ft_new_line(line, tmp));
-			tmp->index++;
+			if ((*tmp)->buf[(*tmp)->index] == '\n')
+				return (ft_new_line(line, *tmp));
+			(*tmp)->index++;
 		}
-		tmp->x = len_to_c(tmp->buf, '\0', 0, &tmp);
-		if (!ft_null_byte(tmp))
-			return (len_to_c(NULL, 'x', -1, &info));
+		(*tmp)->x = len_to_c((*tmp)->buf, '\0', 0, tmp);
+		if (!ft_null_byte(*tmp))
+			return (len_to_c(NULL, 'x', -1, info));
 	}
 	*line = malloc(1 * sizeof(char));
 	if (*line == NULL)
-		return (len_to_c(NULL, 'x', -1, &info));
-	return (delete_node(&info, line));
+		return (len_to_c(NULL, 'x', -1, info));
+	return (delete_node(info, line));
 }
 
 int			get_next_line(int fd, char **line)
@@ -148,5 +148,5 @@ int			get_next_line(int fd, char **line)
 		if (tmp == NULL)
 			return (len_to_c(NULL, 'x', -1, &info));
 	}
-	return (gnl_con(info, tmp, line));
+	return (gnl_con(&info, &tmp, line));
 }
