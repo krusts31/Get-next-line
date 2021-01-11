@@ -12,30 +12,28 @@
 
 #include "get_next_line.h"
 
-static int	ft_new_line(char **line, t_list123 *info)
+static int	ft_new_line(char **line, t_list123 *temp, t_list123 **info)
 {
-	if (info->ret < 0)
-		return (0);
-	info->len = len_to_c(info->rem, '\0', 0, &info) + info->index;
-	info->prev = 1;
-	info->x = 0;
-	info->y = 0;
-	info->tmp = malloc((info->len * sizeof(char)) + 1);
-	if (info->tmp == NULL)
-		return (0);
-	info->tmp[info->len] = '\0';
-	if (info->rem != NULL)
+	temp->len = len_to_c(temp->rem, '\0', 0, &temp) + temp->index;
+	temp->prev = 1;
+	temp->x = 0;
+	temp->y = 0;
+	temp->tmp = malloc((temp->len * sizeof(char)) + 1);
+	if (temp->tmp == NULL)
+		return (len_to_c(NULL, 'x', -1, info));
+	temp->tmp[temp->len] = '\0';
+	if (temp->rem != NULL)
 	{
-		while (info->rem[info->x] != '\0')
+		while (temp->rem[temp->x] != '\0')
 		{
-			info->tmp[info->x] = info->rem[info->x];
-			info->x++;
+			temp->tmp[temp->x] = temp->rem[temp->x];
+			temp->x++;
 		}
-		free(info->rem);
-		info->rem = NULL;
+		free(temp->rem);
+		temp->rem = NULL;
 	}
-	info->index++;
-	return (ft_con(info, line));
+	temp->index++;
+	return (ft_con(temp, line, info));
 }
 
 static int	ft_null_byte(t_list123 *info)
@@ -73,8 +71,6 @@ static int	read_and_copy(t_list123 *info)
 	if (info->prev == 0)
 	{
 		info->ret = read(info->fd, info->buf, BUFFER_SIZE);
-		if (info->ret < 0)
-			return (0);
 		info->buf[info->ret] = '\0';
 	}
 	else
@@ -109,7 +105,7 @@ static int	gnl_con(t_list123 **info, t_list123 **tmp, char **line)
 		while ((*tmp)->buf[(*tmp)->index])
 		{
 			if ((*tmp)->buf[(*tmp)->index] == '\n')
-				return (ft_new_line(line, *tmp));
+				return (ft_new_line(line, *tmp, info));
 			(*tmp)->index++;
 		}
 		(*tmp)->x = len_to_c((*tmp)->buf, '\0', 0, tmp);
@@ -127,7 +123,7 @@ int			get_next_line(int fd, char **line)
 	static t_list123	*info = NULL;
 	t_list123			*tmp;
 
-	if (line == NULL || BUFFER_SIZE <= 0 || fd < 0)
+	if (line == NULL || BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)
 		return (len_to_c(NULL, 'x', -1, &info));
 	if (info == NULL)
 	{

@@ -37,7 +37,7 @@ typedef struct	s_list
 
 int				get_next_line(int fd, char **line);
 int				len_to_c(char *line, char hit, int ret, t_list123 **info);
-int				ft_con(t_list123 *info, char **line);
+int				ft_con(t_list123 *tmep, char **line, t_list123 **info);
 t_list123		*init_list(int fd);
 t_list123		*ft_lst_b(t_list123 **lst, t_list123 *new);
 int				delete_node(t_list123 **info, char **line);

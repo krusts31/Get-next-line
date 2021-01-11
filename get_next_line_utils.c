@@ -6,7 +6,7 @@
 /*   By: alkrusts <alkrust@student.codam.nl>          +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/01/05 15:57:11 by alkrusts      #+#    #+#                 */
-/*   Updated: 2021/01/08 13:15:45 by alkrusts      ########   odam.nl         */
+/*   Updated: 2021/01/09 21:58:32 by alkrusts      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int			len_to_c(char *line, char hit, int ret, t_list123 **info)
 {
-	int		x;
+	int			x;
 	t_list123	*now;
 
 	if (hit != 'x')
@@ -37,32 +37,32 @@ int			len_to_c(char *line, char hit, int ret, t_list123 **info)
 	return (ret);
 }
 
-int			ft_con(t_list123 *info, char **line)
+int			ft_con(t_list123 *tmep, char **line, t_list123 **info)
 {
-	while (info->buf[info->y] != '\n' && info->buf[info->y] != '\0')
+	while (tmep->buf[tmep->y] != '\n' && tmep->buf[tmep->y] != '\0')
 	{
-		info->tmp[info->x] = info->buf[info->y];
-		info->x++;
-		info->y++;
+		tmep->tmp[tmep->x] = tmep->buf[tmep->y];
+		tmep->x++;
+		tmep->y++;
 	}
-	if (info->buf[info->y] == '\n')
+	if (tmep->buf[tmep->y] == '\n')
 	{
-		info->len = len_to_c(info->buf + info->y + 1, '\0', 0, &info);
-		info->rem = malloc(sizeof(char) * info->len + 1);
-		if (info->rem == NULL)
-			return (0);
-		info->rem[info->len] = '\0';
-		info->x = 0;
-		info->y++;
-		while (info->buf[info->y] != '\0')
+		tmep->len = len_to_c(tmep->buf + tmep->y + 1, '\0', 0, &tmep);
+		tmep->rem = malloc(sizeof(char) * tmep->len + 1);
+		if (tmep->rem == NULL)
+			return (len_to_c(NULL, 'x', -1, info));
+		tmep->rem[tmep->len] = '\0';
+		tmep->x = 0;
+		tmep->y++;
+		while (tmep->buf[tmep->y] != '\0')
 		{
-			info->rem[info->x] = info->buf[info->y];
-			info->y++;
-			info->x++;
+			tmep->rem[tmep->x] = tmep->buf[tmep->y];
+			tmep->y++;
+			tmep->x++;
 		}
-		info->rem[info->x] = '\0';
+		tmep->rem[tmep->x] = '\0';
 	}
-	*line = info->tmp;
+	*line = tmep->tmp;
 	return (1);
 }
 

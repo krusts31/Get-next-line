@@ -56,32 +56,29 @@ int     main(int argc, char **argv)
 	x = 3;
 	while (ret > 0 || ret1 > 0 || ret3 > 0 || ret2 > 0)
 	{ 
-		if (ret > 0 && fd > 0)
+		if (ret >= 0 && fd > 0)
 		{
-			if (x == 0)
-				ret = get_next_line(fd, NULL);
-			else
-				ret = get_next_line(fd, &line);
+			ret = get_next_line(fd, &line);
 			printf("[%d], file 1: %s\n", ret, line);
 			free(line);
 			line = NULL;
 			x--;
 		}
-		if (ret1 > 0 && fd2 > 0)
+		if (ret1 >= 0 && fd2 > 0)
 		{
 			ret1 = get_next_line(fd2, &line2);
 			printf("[%d], file 2: %s\n", ret1, line2);
 			free(line2);
 			line2 = NULL;
 		}
-		if (ret2 > 0 && fd3 > 0)
+		if (ret2 >= 0 && fd3 > 0)
 		{
 			ret2 = get_next_line(fd3, &line3);
 			printf("[%d], file 3: %s\n", ret2, line3);
 			free(line3);
 			line3 = NULL;
 		}
-		if (ret3 > 0 && fd4 > 0)
+		if (ret3 >= 0 && fd4 > 0)
 		{
 			ret3 = get_next_line(fd4, &line4);
 			printf("[%d], file 4: %s\n", ret3, line4);
