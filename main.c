@@ -59,6 +59,8 @@ int     main(int argc, char **argv)
 		if (ret >= 0 && fd > 0)
 		{
 			ret = get_next_line(fd, &line);
+			if (ret == -1)
+				return (0);
 			printf("[%d], file 1: %s\n", ret, line);
 			free(line);
 			line = NULL;
@@ -67,6 +69,8 @@ int     main(int argc, char **argv)
 		if (ret1 >= 0 && fd2 > 0)
 		{
 			ret1 = get_next_line(fd2, &line2);
+			if (ret1 == -1)
+				return (0);
 			printf("[%d], file 2: %s\n", ret1, line2);
 			free(line2);
 			line2 = NULL;
@@ -74,6 +78,8 @@ int     main(int argc, char **argv)
 		if (ret2 >= 0 && fd3 > 0)
 		{
 			ret2 = get_next_line(fd3, &line3);
+			if (ret2 == -1)
+				return (0);
 			printf("[%d], file 3: %s\n", ret2, line3);
 			free(line3);
 			line3 = NULL;
@@ -81,6 +87,8 @@ int     main(int argc, char **argv)
 		if (ret3 >= 0 && fd4 > 0)
 		{
 			ret3 = get_next_line(fd4, &line4);
+			if (ret3 == -1)
+				return (0);
 			printf("[%d], file 4: %s\n", ret3, line4);
 			free(line4);
 			line4 = NULL;
