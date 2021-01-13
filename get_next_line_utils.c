@@ -29,6 +29,7 @@ int			len_to_c(char *line, char hit, int ret, t_list123 **info)
 	while (*info)
 	{
 		now = (*info)->next;
+		free((*info)->tmp);
 		free((*info)->rem);
 		free(*info);
 		(*info) = now;
@@ -51,7 +52,6 @@ int			ft_con(t_list123 *tmep, char **line, t_list123 **info)
 		tmep->rem = malloc(sizeof(char) * tmep->len + 1);
 		if (tmep->rem == NULL)
 			return (len_to_c(NULL, 'x', -1, info));
-		tmep->rem[tmep->len] = '\0';
 		tmep->x = 0;
 		tmep->y++;
 		while (tmep->buf[tmep->y] != '\0')
@@ -63,6 +63,7 @@ int			ft_con(t_list123 *tmep, char **line, t_list123 **info)
 		tmep->rem[tmep->x] = '\0';
 	}
 	*line = tmep->tmp;
+	tmep->tmp = NULL;
 	return (1);
 }
 
